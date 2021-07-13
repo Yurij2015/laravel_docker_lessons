@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mariadblesson:
+    image: docker.io/bitnami/mariadb:10.2
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=laravel
+      - MARIADB_DATABASE=laravel
+      - MARIADB_PASSWORD=password
+    container_name: mariadblesson
+    ports:
+      - 3307:3306
+  phpmyadmin_lesson:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_lesson
+    ports:
+      - 8080:80
+    links:
+      - mariadblesson:db
+  myapp_lesson:
+    tty: true
+    image: docker.io/bitnami/laravel:8
+    environment:
+      - DB_HOST=mariadblesson
+      - DB_USERNAME=laravel
+      - DB_DATABASE=laravel
+      - DB_PASSWORD=password
+    depends_on:
+      - mariadblesson
+    ports:
+      - 80:3000
+    volumes:
+      - ./:/app
+    container_name: myapp_lesson
